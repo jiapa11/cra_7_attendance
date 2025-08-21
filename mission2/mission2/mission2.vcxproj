@@ -24,7 +24,9 @@
   <ItemGroup>
     <ClCompile Include="attendance_checker.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="unittest.cpp" />
+    <ClCompile Include="unittest.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"> %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
