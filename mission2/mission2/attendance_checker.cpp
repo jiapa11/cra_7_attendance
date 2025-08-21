@@ -112,15 +112,14 @@ void AttendanceChecker::UpdateAttendance(Attendance record) {
 
 void AttendanceChecker::AssignGradeToPlayers() {
 	for (PlayerInfo& player : players) {
-		Grade* grade = GradeFactory::GetGrade(player.point);
-		player.grade = grade->GetGradeString();
-		free(grade);
+		std::unique_ptr<Grade> grade = GradeFactory::GetGrade(player.point);
+		player.grade = grade->GetGradeString();		
 	}
 }
 
 bool AttendanceChecker::NeedToRemove(PlayerInfo player) {
-	if (player.grade == "GOLD") return false;
-	if (player.grade == "SILVER") return false;
+	if (player.grade == GradeString::GOLD) return false;
+	if (player.grade == GradeString::SILVER) return false;
 	if (player.attendance_per_day[WEDNESDAY] != 0) return false;
 	if (player.attendance_per_day[SATURDAY] != 0 || player.attendance_per_day[SUNDAY] != 0) return false;
 

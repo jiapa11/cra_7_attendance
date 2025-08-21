@@ -12,7 +12,6 @@ using namespace std;
 struct PlayerInfo {
 	string name;
 	int point;
-	//int grade;
 	string grade;
 	int attendance_per_day[7];	
 };
@@ -58,12 +57,6 @@ private:
 	vector<PlayerInfo> removed_players;
 
 	const string INPUT_DATA = "attendance_weekday_500.txt";
-	//const int THRESHOLD_FOR_GOLD_LEVEL = 50;
-	//const int THRESHOLD_FOR_SILVER_LEVEL = 30;
-
-	//const int NORMAL = 0;
-	//const int GOLD = 1;
-	//const int SILVER = 2;
 
 	const static int MONDAY = 0;
 	const static int TUESDAY = 1;
@@ -120,8 +113,6 @@ private:
 		if (day == "friday") return FRIDAY;
 		if (day == "saturday") return SATURDAY;
 		if (day == "sunday") return SUNDAY;
-
-		//throw std::runtime_error("invalid day input: " + day);
 
 		return 0;
 	}
