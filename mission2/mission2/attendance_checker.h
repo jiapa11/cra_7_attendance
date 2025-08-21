@@ -5,14 +5,15 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include "grade_assigner.h"
 
 using namespace std;
 
 struct PlayerInfo {
 	string name;
 	int point;
-	int grade;
-	string grade_string;
+	//int grade;
+	string grade;
 	int attendance_per_day[7];	
 };
 
@@ -57,12 +58,12 @@ private:
 	vector<PlayerInfo> removed_players;
 
 	const string INPUT_DATA = "attendance_weekday_500.txt";
-	const int THRESHOLD_FOR_GOLD_LEVEL = 50;
-	const int THRESHOLD_FOR_SILVER_LEVEL = 30;
+	//const int THRESHOLD_FOR_GOLD_LEVEL = 50;
+	//const int THRESHOLD_FOR_SILVER_LEVEL = 30;
 
-	const int NORMAL = 0;
-	const int GOLD = 1;
-	const int SILVER = 2;
+	//const int NORMAL = 0;
+	//const int GOLD = 1;
+	//const int SILVER = 2;
 
 	const static int MONDAY = 0;
 	const static int TUESDAY = 1;
@@ -77,7 +78,6 @@ private:
 	const static int WEDNESDAY_ATTENDANCE_BONUS_POINT = 10;
 	const static int THRESHOLD_FOR_WEEKEND_ATTENDANCE_BONUS_POINT = 10;
 	const static int WEEKEND_ATTENDANCE_BONUS_POINT = 10;
-
 
 	void GetInputFromFile();
 

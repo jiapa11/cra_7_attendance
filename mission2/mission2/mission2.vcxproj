@@ -33,6 +33,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="attendance_checker.h" />
+    <ClInclude Include="grade_assigner.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

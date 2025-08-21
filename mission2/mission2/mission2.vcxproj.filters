@@ -38,6 +38,9 @@
     <ClInclude Include="attendance_checker.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="grade_assigner.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="attendance_weekday_500.txt">

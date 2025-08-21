@@ -112,17 +112,15 @@ void AttendanceChecker::UpdateAttendance(Attendance record) {
 
 void AttendanceChecker::AssignGradeToPlayers() {
 	for (PlayerInfo& player : players) {
-		if (player.point >= THRESHOLD_FOR_GOLD_LEVEL) player.grade = GOLD;
-		else if (player.point >= THRESHOLD_FOR_SILVER_LEVEL) player.grade = SILVER;
-		else player.grade = NORMAL;
-
-		player.grade_string = ToString(player.grade);
+		Grade* grade = GradeFactory::GetGrade(player.point);
+		player.grade = grade->GetGradeString();
+		free(grade);
 	}
 }
 
 bool AttendanceChecker::NeedToRemove(PlayerInfo player) {
-	if (player.grade == GOLD) return false;
-	if (player.grade == SILVER) return false;
+	if (player.grade == "GOLD") return false;
+	if (player.grade == "SILVER") return false;
 	if (player.attendance_per_day[WEDNESDAY] != 0) return false;
 	if (player.attendance_per_day[SATURDAY] != 0 || player.attendance_per_day[SUNDAY] != 0) return false;
 
@@ -139,7 +137,7 @@ void AttendanceChecker::PrintAllPlayers() {
 	for (auto player : players) {
 		cout << "NAME : " << player.name << ", ";
 		cout << "POINT : " << player.point << ", ";
-		cout << "GRADE : " << ToString(player.grade) << "\n";
+		cout << "GRADE : " << player.grade << "\n";
 	}
 }
 

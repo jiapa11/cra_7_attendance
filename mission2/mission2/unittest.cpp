@@ -64,7 +64,7 @@ TEST_F(Fixture, AllPlayersPointCorrect) {
 
 	std::vector<PlayerInfoForPrint> actual;
 	for (auto e : v) {
-		actual.push_back({e.name, e.point, e.grade_string});
+		actual.push_back({e.name, e.point, e.grade});
 	}
 
 	ASSERT_EQ(expected.size(), actual.size());
