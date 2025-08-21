@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include "gmock/gmock.h"
 
 using namespace std;
 
@@ -136,5 +137,8 @@ void input() {
 }
 
 int main() {
+	//::testing::InitGoogleTest();
+	//return RUN_ALL_TESTS();
+
 	input();
 }
