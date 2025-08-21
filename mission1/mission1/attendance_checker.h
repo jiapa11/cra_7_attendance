@@ -31,7 +31,7 @@ public:
 
 	void Print();
 
-	int GetNumLinesOfRawData() { return raw_data.size(); }
+	size_t GetNumLinesOfRawData() { return raw_data.size(); }
 
 	vector<PlayerInfo> GetAllPlayersInfo() { return players; }
 
@@ -64,7 +64,17 @@ private:
 	const static int SUNDAY = 6;
 	const static int INVALID_INPUT = -1;
 
+	const static int THRESHOLD_FOR_WEDNESDAY_ATTENDANCE_BONUS_POINT = 10;
+	const static int WEDNESDAY_ATTENDANCE_BONUS_POINT = 10;
+	const static int THRESHOLD_FOR_WEEKEND_ATTENDANCE_BONUS_POINT = 10;
+	const static int WEEKEND_ATTENDANCE_BONUS_POINT = 10;
+
+
 	void GetInputFromFile();
+
+	void UpdateBasicPoints();
+
+	void UpdateBonusPoints();
 
 	void UpdatePoints();
 
@@ -80,7 +90,7 @@ private:
 
 	bool NeedToRemove(PlayerInfo player);
 
-	void UpdateRemovedPlayers();
+	void UpdateRemovedPlayersList();
 
 	string ToString(int level) {
 		if (level == 1) return "GOLD";
