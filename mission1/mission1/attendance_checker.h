@@ -12,20 +12,44 @@ struct Attendance {
 	string name, day;
 };
 
+struct PlayerInfo {
+	string name;
+	int point;
+	string level;
+};
+
 class AttendanceChecker {
 public:
-	void GetInputAndParse() {
+	const int NUM_OF_LINES_FOR_RAW_DATA = 500;
+	vector<Attendance> raw_data;
+
+	void GetInput() {
 		ifstream fin{ INPUT_DATA }; //500개 데이터 입력
-		for (int i = 0; i < 500; i++) {
+		for (int i = 0; i < NUM_OF_LINES_FOR_RAW_DATA; i++) {
 			string name, day;
 			fin >> name >> day;
-			ParseLine({ name, day });
+			raw_data.push_back({ name, day });
 		}
 	}
 
-	void Run() {
-		GetInputAndParse();
+	int GetNumLinesOfRawData() {
+		return raw_data.size();
+	}
 
+	void Parse() {
+		for (const Attendance &attendance : raw_data) {
+			ParseLine(attendance);
+		}
+	}
+
+	string GetLevelString(int level) {
+		if (level == 1) return "GOLD";
+		if (level == 2) return "SILVER";
+
+		return "NORMAL";
+	}
+
+	void AssignLevel() {
 		for (int i = 1; i <= id_cnt; i++) {
 			if (dat[i][2] > 9) {
 				points[i] += 10;
@@ -36,33 +60,62 @@ public:
 			}
 
 			if (points[i] >= THRESHOLD_FOR_GOLD_LEVEL) {
-				// gold
-				grade[i] = static_cast<int>(Level::GOLD);
+				grade[i] = GOLD;
 			}
 			else if (points[i] >= THRESHOLD_FOR_SILVER_LEVEL) {
-				// silver
-				grade[i] = static_cast<int>(Level::SILVER);
+				grade[i] = SILVER;
 			}
 			else {
-				// normal
-				grade[i] = static_cast<int>(Level::NORMAL);
+				grade[i] = NORMAL;
 			}
+		}
+	}
 
+	vector<PlayerInfo> GetAllPlayersInfo() {
+		vector<PlayerInfo> v;
+		for (int i = 1; i <= id_cnt; i++) {
+			v.push_back({names[i], points[i], GetLevelString(grade[i])});
+		}
+		return v;
+	}
+
+	void PrintAllPlayers() {
+		for (int i = 1; i <= id_cnt; i++) {
 			cout << "NAME : " << names[i] << ", ";
 			cout << "POINT : " << points[i] << ", ";
 			cout << "GRADE : ";
 
-			if (grade[i] == static_cast<int>(Level::GOLD)) {
+			if (grade[i] == GOLD) {
 				cout << "GOLD" << "\n";
 			}
-			else if (grade[i] == static_cast<int>(Level::SILVER)) {
+			else if (grade[i] == SILVER) {
 				cout << "SILVER" << "\n";
 			}
 			else {
 				cout << "NORMAL" << "\n";
 			}
 		}
+	}
 
+	void Run() {
+		GetInput();
+		Parse();
+		AssignLevel();
+		PrintAllPlayers();
+		PrintRemovedPlayers();
+	}
+
+	vector<string> GetRemovedPlayers() {
+		vector<string> v;
+		for (int i = 1; i <= id_cnt; i++) {
+			if (NeedToRemove(i)) {
+				v.push_back(names[i]);
+			}
+		}
+		return v;
+	}
+
+	void PrintRemovedPlayers() {
 		std::cout << "\n";
 		std::cout << "Removed player\n";
 		std::cout << "==============\n";
@@ -73,9 +126,8 @@ public:
 		}
 	}
 
-	bool NeedToRemove(int i)
-	{
-		return grade[i] != static_cast<int>(Level::GOLD) && grade[i] != static_cast<int>(Level::SILVER) && wed[i] == 0 && weeken[i] == 0;
+	bool NeedToRemove(int i) {
+		return grade[i] != GOLD && grade[i] != SILVER && wed[i] == 0 && weeken[i] == 0;
 	}
 
 	void ParseLine(Attendance record/*string w, string wk*/) {
@@ -143,11 +195,16 @@ public:
 	const int THRESHOLD_FOR_GOLD_LEVEL = 50;
 	const int THRESHOLD_FOR_SILVER_LEVEL = 30;
 
-	enum class Level {
-		NORMAL = 0,
-		GOLD = 1,
-		SILVER = 2,
-	};
+	const int NORMAL = 0;
+	const int GOLD = 1;
+	const int SILVER = 2;
+
+	//enum class Level {
+	//	NORMAL = 0,
+	//	GOLD = 1,
+	//	SILVER = 2,
+	//};
+
 private:
 	map<string, int> id1;
 	int id_cnt = 0;
