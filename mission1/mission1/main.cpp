@@ -3,9 +3,9 @@
 #include "attendance_checker.h"
 
 int main() {
-	::testing::InitGoogleTest();
-	return RUN_ALL_TESTS();
+	//::testing::InitGoogleTest();
+	//return RUN_ALL_TESTS();
 
-	//AttendanceChecker checker;
-	//checker.Run();
+	AttendanceChecker checker;
+	checker.Run();
 }

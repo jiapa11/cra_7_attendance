@@ -37,6 +37,7 @@ public:
 		GetInput();
 		Parse();
 		AssignLevel();
+		UpdateRemovedPlayers();
 	}
 
 	void Print() {
@@ -50,23 +51,25 @@ public:
 
 	vector<PlayerInfo> GetAllPlayersInfo() {
 		vector<PlayerInfo> v;
-		for (int i = 1; i <= id_cnt; i++) {
-			v.push_back({ names[i], points[i], GetLevelString(grade[i]) });
+		for (auto player : players) {
+			v.push_back({ player.name, player.point, GetLevelString(player.grade) });
 		}
 		return v;
+	}
+
+	void UpdateRemovedPlayers() {
+		for (Player& player : players) {
+			if (NeedToRemove(player)) removed_players.push_back(player);
+		}
 	}
 
 	vector<string> GetRemovedPlayers() {
 		vector<string> v;
-		for (int i = 1; i <= id_cnt; i++) {
-			if (NeedToRemove(i)) {
-				v.push_back(names[i]);
-			}
+		for (auto removed_player : removed_players) {
+			v.push_back(removed_player.name);
 		}
 		return v;
 	}
-
-
 
 	int AssignAndGetID(string name) {
 		if (name_to_id_map.count(name) == 0) {
@@ -182,6 +185,15 @@ private:
 				grade[i] = NORMAL;
 			}
 		}
+
+		for (Player& player : players) {
+			if (player.attendance_per_day[WEDNESDAY] >= 10) player.point += 10;
+			if ((player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY]) >= 10) player.point += 10;
+
+			if (player.point >= THRESHOLD_FOR_GOLD_LEVEL) player.grade = GOLD;
+			else if (player.point >= THRESHOLD_FOR_SILVER_LEVEL) player.grade = SILVER;
+			else player.grade = NORMAL;
+		}
 	}
 
 	string GetLevelString(int level) {
@@ -192,32 +204,42 @@ private:
 	}
 
 	void PrintAllPlayers() {
-		for (int i = 1; i <= id_cnt; i++) {
-			cout << "NAME : " << names[i] << ", ";
-			cout << "POINT : " << points[i] << ", ";
-			cout << "GRADE : ";
-
-			if (grade[i] == GOLD) {
-				cout << "GOLD" << "\n";
-			}
-			else if (grade[i] == SILVER) {
-				cout << "SILVER" << "\n";
-			}
-			else {
-				cout << "NORMAL" << "\n";
-			}
+		for (auto player : players) {
+			cout << "NAME : " << player.name << ", ";
+			cout << "POINT : " << player.point << ", ";
+			cout << "GRADE : " << GetLevelString(player.grade) << "\n";
 		}
+
+		//for (int i = 1; i <= id_cnt; i++) {
+		//	cout << "NAME : " << names[i] << ", ";
+		//	cout << "POINT : " << points[i] << ", ";
+		//	cout << "GRADE : ";
+
+		//	if (grade[i] == GOLD) {
+		//		cout << "GOLD" << "\n";
+		//	}
+		//	else if (grade[i] == SILVER) {
+		//		cout << "SILVER" << "\n";
+		//	}
+		//	else {
+		//		cout << "NORMAL" << "\n";
+		//	}
+		//}
 	}
 
 	void PrintRemovedPlayers() {
 		std::cout << "\n";
 		std::cout << "Removed player\n";
 		std::cout << "==============\n";
-		for (int i = 1; i <= id_cnt; i++) {
-			if (NeedToRemove(i)) {
-				std::cout << names[i] << "\n";
-			}
+
+		for (auto removed_player : removed_players) {
+			std::cout << removed_player.name << "\n";
 		}
+		//for (int i = 1; i <= id_cnt; i++) {
+		//	if (NeedToRemove(i)) {
+		//		std::cout << names[i] << "\n";
+		//	}
+		//}
 	}
 
 	bool NeedToRemove(int i) {
@@ -227,6 +249,15 @@ private:
 		if (dat[i][SATURDAY] != 0 || dat[i][SUNDAY] != 0) return false;
 
 		return true;		
+	}
+
+	bool NeedToRemove(Player player) {
+		if (player.grade == GOLD) return false;
+		if (player.grade == SILVER) return false;
+		if (player.attendance_per_day[WEDNESDAY] != 0) return false;
+		if (player.attendance_per_day[SATURDAY] != 0 || player.attendance_per_day[SUNDAY] != 0) return false;
+
+		return true;
 	}
 
 	int GetDayIndex(string day) {
