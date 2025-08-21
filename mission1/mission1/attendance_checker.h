@@ -19,10 +19,11 @@ struct PlayerInfo {
 };
 
 struct Player {
-	int day[7];
+	string name;
 	int point;
 	int grade;
-	string name;
+	string level;
+	int attendance_per_day[7];	
 };
 
 class AttendanceChecker {
@@ -67,30 +68,6 @@ public:
 
 
 
-	int GetDayIndex(string day) {
-		if (day == "monday") return MONDAY;
-		if (day == "tuesday") return TUESDAY;
-		if (day == "wednesday") return WEDNESDAY;
-		if (day == "thursday") return THURSDAY;
-		if (day == "friday") return FRIDAY;
-		if (day == "saturday") return SATURDAY;
-		if (day == "sunday") return SUNDAY;
-
-		return INVALID_INPUT;
-	}
-
-	int GetAddPoint(string day) {
-		if (day == "monday") return 1;
-		if (day == "tuesday") return 1;
-		if (day == "wednesday") return 3;
-		if (day == "thursday") return 1;
-		if (day == "friday") return 1;	
-		if (day == "saturday") return 2;
-		if (day == "sunday") return 2;
-
-		return 0;
-	}
-
 	int AssignAndGetID(string name) {
 		if (name_to_id_map.count(name) == 0) {
 			name_to_id_map.insert({ name, ++id_cnt });
@@ -107,20 +84,23 @@ public:
 	void ParseLine(Attendance record) {
 		string name = record.name;
 		string day = record.day;
-
-		Player player{};
-
-		//if (IsNewPlayer(name)) {
-		//	Player new_player{};
-		//	new_player.name = name;
-		//	players.push_back(new_player);
-		//	player = players[id_cnt];
-		//}
-		//else {
-		//	name_to_id_map[name];
-		//}
-
+		
+		int previous_id = id_cnt;
 		int id = AssignAndGetID(name);
+
+		Player *player = nullptr;
+		if (/*IsNewPlayer(name)*/ id > previous_id) {
+			Player new_player{};
+			//name_to_id_map.insert({ name, ++id_cnt });
+			new_player.name = name;
+			players.push_back(new_player);
+			player = &(players[id_cnt-1]);
+		}
+		else {
+			int id = name_to_id_map[name];
+			player = &(players[id-1]);
+		}
+
 		int day_index = GetDayIndex(day);
 		if (day_index == -1) {
 			cout << "ERROR" << " invalid day" << endl;
@@ -130,11 +110,8 @@ public:
 		dat[id][day_index] += 1; //사용자ID별 요일 데이터에 1씩 증가
 		points[id] += GetAddPoint(day);
 
-		Player new_player{};
-		new_player.name = name;
-		new_player.day[day_index] += 1;
-		new_player.point = GetAddPoint(day);
-		players.push_back(new_player);
+		player->attendance_per_day[day_index] += 1;
+		player->point += GetAddPoint(day);
 	}
 
 private:
@@ -250,5 +227,29 @@ private:
 		if (dat[i][SATURDAY] != 0 || dat[i][SUNDAY] != 0) return false;
 
 		return true;		
+	}
+
+	int GetDayIndex(string day) {
+		if (day == "monday") return MONDAY;
+		if (day == "tuesday") return TUESDAY;
+		if (day == "wednesday") return WEDNESDAY;
+		if (day == "thursday") return THURSDAY;
+		if (day == "friday") return FRIDAY;
+		if (day == "saturday") return SATURDAY;
+		if (day == "sunday") return SUNDAY;
+
+		return INVALID_INPUT;
+	}
+
+	int GetAddPoint(string day) {
+		if (day == "monday") return 1;
+		if (day == "tuesday") return 1;
+		if (day == "wednesday") return 3;
+		if (day == "thursday") return 1;
+		if (day == "friday") return 1;
+		if (day == "saturday") return 2;
+		if (day == "sunday") return 2;
+
+		return 0;
 	}
 };
