@@ -12,6 +12,23 @@ void AttendanceChecker::Init() {
 	UpdateRemovedPlayersList();
 }
 
+bool AttendanceChecker::IsCleared() {
+	if (raw_data.size() != 0) return false;
+	if (name_to_id_map.size() != 0) return false;
+	if (id_cnt != 0) return false;
+	if (players.size() != 0) return false;
+	if (removed_players.size() != 0) return false;
+	return true;
+}
+
+void AttendanceChecker::Clear() {
+	raw_data.clear();
+	name_to_id_map.clear();
+	id_cnt = 0;
+	players.clear();
+	removed_players.clear();
+}
+
 void AttendanceChecker::Print() {
 	PrintAllPlayers();
 	PrintRemovedPlayers();
@@ -32,17 +49,25 @@ void AttendanceChecker::UpdateBasicPoints() {
 	}
 }
 
+int AttendanceChecker::GetBonusPoints(PlayerInfo &player) {
+	int bonus_points = 0;
+	
+	int wednesday_attendance = player.attendance_per_day[WEDNESDAY];
+	if (wednesday_attendance >= THRESHOLD_FOR_WEDNESDAY_ATTENDANCE_BONUS_POINT) {
+		bonus_points += WEDNESDAY_ATTENDANCE_BONUS_POINT;
+	}
+
+	int weekend_attendance = player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY];
+	if (weekend_attendance >= THRESHOLD_FOR_WEEKEND_ATTENDANCE_BONUS_POINT) {
+		bonus_points += WEEKEND_ATTENDANCE_BONUS_POINT;
+	}
+	
+	return bonus_points;
+}
+
 void AttendanceChecker::UpdateBonusPoints() {
 	for (PlayerInfo& player : players) {
-		int wednesday_attendance = player.attendance_per_day[WEDNESDAY];
-		if (wednesday_attendance >= THRESHOLD_FOR_WEDNESDAY_ATTENDANCE_BONUS_POINT) {
-			player.point += WEDNESDAY_ATTENDANCE_BONUS_POINT;
-		}
-
-		int weekend_attendance = player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY];
-		if (weekend_attendance >= THRESHOLD_FOR_WEEKEND_ATTENDANCE_BONUS_POINT) {
-			player.point += WEEKEND_ATTENDANCE_BONUS_POINT;
-		}
+		player.point += GetBonusPoints(player);
 	}
 }
 
@@ -79,8 +104,10 @@ void AttendanceChecker::UpdateAttendance(Attendance record) {
 	}
 	else player = GetExistingPlayer(name);
 
-	player->attendance_per_day[GetDayIndex(day)] += 1;
-	player->point += GetAddPoint(day);
+	if (player) {
+		player->attendance_per_day[GetDayIndex(day)] += 1;
+		player->point += GetAddPoint(day);
+	}
 }
 
 void AttendanceChecker::AssignGradeToPlayers() {

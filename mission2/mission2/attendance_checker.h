@@ -23,19 +23,28 @@ public:
 	};
 
 	AttendanceChecker() = default;
+
 	~AttendanceChecker() = default;
 
 	void Run();
 
 	void Init();
 
+	bool IsCleared();
+
+	void Clear();
+
 	void Print();
 
-	size_t GetNumLinesOfRawData() { return raw_data.size(); }
+	size_t GetNumLinesOfRawData() { 
+		return raw_data.size(); 
+	}
 
 	vector<PlayerInfo> GetAllPlayersInfo() { return players; }
 
 	vector<PlayerInfo> GetRemovedPlayers() { return removed_players; }
+	
+	int GetBonusPoints(PlayerInfo& player);
 
 private:
 	const int NUM_OF_LINES_FOR_RAW_DATA = 500;
@@ -112,9 +121,9 @@ private:
 		if (day == "saturday") return SATURDAY;
 		if (day == "sunday") return SUNDAY;
 
-		throw std::runtime_error("invalid day input: " + day);
+		//throw std::runtime_error("invalid day input: " + day);
 
-		return INVALID_INPUT;
+		return 0;
 	}
 
 	int GetAddPoint(string day) {

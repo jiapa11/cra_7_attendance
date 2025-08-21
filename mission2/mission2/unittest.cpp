@@ -7,18 +7,31 @@ protected:
 	struct PlayerInfoForPrint {
 		string name;
 		int point;
-		string level;
+		string grade;
+
+		bool operator==(const PlayerInfoForPrint& other) const {
+			return name == other.name && point == other.point && grade == other.grade;
+		}
 	};
 
 	void SetUp() override {
 		checker.Init();
-
 	}
 
 	void TearDown() override {
 
 	}
 };
+
+TEST_F(Fixture, Cleared) {
+	checker.Clear();
+	EXPECT_EQ(true, checker.IsCleared());
+}
+
+TEST_F(Fixture, NoExceptionWhileInit) {
+	EXPECT_NO_THROW(checker.Clear());
+	EXPECT_NO_THROW(checker.Init());
+}
 
 TEST_F(Fixture, Get500Lines) {
 	EXPECT_EQ(500, checker.GetNumLinesOfRawData());
@@ -47,14 +60,22 @@ TEST_F(Fixture, AllPlayersPointCorrect) {
 	expected.push_back({ "Oscar", 13, "NORMAL" });
 	expected.push_back({ "Zane", 1, "NORMAL" });
 
-	std::vector<PlayerInfo> actual = checker.GetAllPlayersInfo();
+	std::vector<PlayerInfo> v = checker.GetAllPlayersInfo();
+
+	std::vector<PlayerInfoForPrint> actual;
+	for (auto e : v) {
+		actual.push_back({e.name, e.point, e.grade_string});
+	}
+
 	ASSERT_EQ(expected.size(), actual.size());
 
-	for (int i = 0; i < expected.size(); i++) {
-		ASSERT_EQ(expected[i].name, actual[i].name);
-		ASSERT_EQ(expected[i].point, actual[i].point);
-		ASSERT_EQ(expected[i].level, actual[i].grade_string);
-	}
+	EXPECT_THAT(expected, testing::ContainerEq(actual));
+	//ASSERT_EQ(expected, actual);
+	//for (int i = 0; i < expected.size(); i++) {
+	//	ASSERT_EQ(expected[i].name, actual[i].name);
+	//	ASSERT_EQ(expected[i].point, actual[i].point);
+	//	ASSERT_EQ(expected[i].grade, actual[i].grade);
+	//}
 }
 
 TEST_F(Fixture, IdentifyRemovedPlayers) {
@@ -65,4 +86,24 @@ TEST_F(Fixture, IdentifyRemovedPlayers) {
 	for (int i = 0; i < expected.size(); i++) {
 		ASSERT_EQ(expected[i], actual[i].name);
 	}
+}
+
+TEST_F(Fixture, NoExceptionWhileRun) {
+	EXPECT_NO_THROW(checker.Clear());
+	EXPECT_NO_THROW(checker.Run());
+}
+
+TEST_F(Fixture, NoExceptionWhilePrinting) {
+	EXPECT_NO_THROW(checker.Print());
+}
+
+TEST_F(Fixture, BonusPoints) {
+	PlayerInfo player;
+	player.attendance_per_day[2] = 11;
+
+	EXPECT_EQ(10, checker.GetBonusPoints(player));
+
+	player.attendance_per_day[5] = 0;
+	player.attendance_per_day[6] = 11;
+	EXPECT_EQ(20, checker.GetBonusPoints(player));
 }
