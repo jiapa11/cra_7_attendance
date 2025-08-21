@@ -6,5 +6,7 @@ int main() {
 	//::testing::InitGoogleTest();
 	//return RUN_ALL_TESTS();
 
-	Run();
+	AttendanceChecker checker;
+	checker.Run();
+	//Run();
 }
