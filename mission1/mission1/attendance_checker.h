@@ -37,7 +37,8 @@ public:
 	void Init() {
 		GetInputFromFile();
 		ParseInput();
-		AssignLevelToPlayers();
+		UpdateSpecialPoints();
+		AssignGradeToPlayers();
 		UpdateRemovedPlayers();
 	}
 
@@ -79,7 +80,12 @@ public:
 		}
 
 		player->attendance_per_day[GetDayIndex(day)] += 1;
+		//if (player->attendance_per_day[WEDNESDAY] >= 10) player->point += 10;
+		//if ((player->attendance_per_day[SATURDAY] + player->attendance_per_day[SUNDAY]) >= 10) player->point += 10;
+		
 		player->point += GetAddPoint(day);
+
+
 	}
 
 private:
@@ -124,11 +130,15 @@ private:
 		}
 	}
 
-	void AssignLevelToPlayers() {
+	void UpdateSpecialPoints() {
 		for (PlayerInfo& player : players) {
 			if (player.attendance_per_day[WEDNESDAY] >= 10) player.point += 10;
 			if ((player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY]) >= 10) player.point += 10;
+		}
+	}
 
+	void AssignGradeToPlayers() {
+		for (PlayerInfo& player : players) {
 			if (player.point >= THRESHOLD_FOR_GOLD_LEVEL) player.grade = GOLD;
 			else if (player.point >= THRESHOLD_FOR_SILVER_LEVEL) player.grade = SILVER;
 			else player.grade = NORMAL;
