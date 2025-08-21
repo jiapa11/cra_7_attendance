@@ -28,7 +28,6 @@ public:
 		string name, day;
 	};
 
-
 	void Run() {
 		Init();
 		Print();
@@ -36,8 +35,8 @@ public:
 
 	void Init() {
 		GetInputFromFile();
-		ParseInput();
-		UpdateSpecialPoints();
+		UpdatePoints();
+		
 		AssignGradeToPlayers();
 		UpdateRemovedPlayers();
 	}
@@ -67,7 +66,7 @@ public:
 		return v;
 	}
 
-	void ParseLine(Attendance record) {
+	void UpdateAttendance(Attendance record) {
 		string name = record.name;
 		string day = record.day;
 
@@ -75,17 +74,10 @@ public:
 		if (IsNewPlayer(name)) {
 			player = RegisterAndGetNewPlayer(name);
 		}
-		else {
-			player = GetExistingPlayer(name);
-		}
+		else player = GetExistingPlayer(name);
 
-		player->attendance_per_day[GetDayIndex(day)] += 1;
-		//if (player->attendance_per_day[WEDNESDAY] >= 10) player->point += 10;
-		//if ((player->attendance_per_day[SATURDAY] + player->attendance_per_day[SUNDAY]) >= 10) player->point += 10;
-		
+		player->attendance_per_day[GetDayIndex(day)] += 1;		
 		player->point += GetAddPoint(day);
-
-
 	}
 
 private:
@@ -124,13 +116,11 @@ private:
 		}
 	}
 
-	void ParseInput() {
+	void UpdatePoints() {
 		for (const Attendance& attendance : raw_data) {
-			ParseLine(attendance);
+			UpdateAttendance(attendance);
 		}
-	}
 
-	void UpdateSpecialPoints() {
 		for (PlayerInfo& player : players) {
 			if (player.attendance_per_day[WEDNESDAY] >= 10) player.point += 10;
 			if ((player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY]) >= 10) player.point += 10;
