@@ -1,8 +1,7 @@
 # cra_7_attendance
 CRA7차 공통과제 
 
-mission1: mission1 폴더 내 .sln
-mission2: mission2 폴더 내 .sln
+mission1: mission1 폴더 내 .sln  mission2: mission2 폴더 내 .sln
 
 | 체크리스트 | 적용여부 | 비고 |
 | --- | --- | --- |
