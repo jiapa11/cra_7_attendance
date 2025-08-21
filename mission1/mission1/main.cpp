@@ -2,10 +2,13 @@
 #include "gmock/gmock.h"
 #include "attendance_checker.h"
 
+#define UNIT_TEST 0 
+
 int main() {
+#if UNIT_TEST
 	::testing::InitGoogleTest();
 	return RUN_ALL_TESTS();
-
+#else
 	AttendanceChecker checker;
 	try {
 		checker.Run();
@@ -16,4 +19,5 @@ int main() {
 	}
 
 	return 0;	
+#endif
 }

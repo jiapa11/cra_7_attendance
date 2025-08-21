@@ -2,7 +2,7 @@
 #include "gmock/gmock.h"
 #include "attendance_checker.h"
 
-#define UNIT_TEST 1
+#define UNIT_TEST 0
 
 int main() {
 #if UNIT_TEST
