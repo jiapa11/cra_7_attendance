@@ -20,7 +20,7 @@ protected:
 		int point;
 		string grade;
 
-<span style = "background-color:#fdd">		bool operator==(const PlayerInfoForPrint&amp; other) const {
+<span style = "background-color:#dfd">		bool operator==(const PlayerInfoForPrint&amp; other) const {
 			return name == other.name &amp;&amp; point == other.point &amp;&amp; grade == other.grade;
 		}</span>
 	};
@@ -46,6 +46,15 @@ protected:
 
 <span style = "background-color:#dfd">TEST_F(Fixture, Get500Lines) {
 	EXPECT_EQ(500, checker.GetNumLinesOfRawData());
+}</span>
+
+<span style = "background-color:#dfd">TEST_F(Fixture, comparator) {
+	std::vector&lt;PlayerInfoForPrint&gt; expected;
+	expected.push_back({ "Umar", 48, "SILVER" });
+	std::vector&lt;PlayerInfoForPrint&gt; actual;
+	actual.push_back({ "Daisy", 45, "SILVER" });</span>
+
+<span style = "background-color:#dfd">	EXPECT_NE(expected, actual);
 }</span>
 
 <span style = "background-color:#dfd">TEST_F(Fixture, AllPlayersPointCorrect) {
@@ -80,23 +89,19 @@ protected:
 
 <span style = "background-color:#dfd">	ASSERT_EQ(expected.size(), actual.size());</span>
 
-<span style = "background-color:#fdd">	EXPECT_THAT(expected, testing::ContainerEq(actual));</span>
-	//ASSERT_EQ(expected, actual);
-	//for (int i = 0; i &lt; expected.size(); i++) {
-	//	ASSERT_EQ(expected[i].name, actual[i].name);
-	//	ASSERT_EQ(expected[i].point, actual[i].point);
-	//	ASSERT_EQ(expected[i].grade, actual[i].grade);
-	//}
-<span style = "background-color:#fdd">}</span>
+<span style = "background-color:#fdd">	EXPECT_EQ(expected, actual);
+}</span>
 
 <span style = "background-color:#dfd">TEST_F(Fixture, IdentifyRemovedPlayers) {
 	vector&lt;string&gt; expected = { "Bob", "Zane" };
-	vector&lt;PlayerInfo&gt; actual = checker.GetRemovedPlayers();
+	vector&lt;PlayerInfo&gt; v = checker.GetRemovedPlayers();
+	std::vector&lt;string&gt; actual;
+	for (auto e : v) {
+		actual.push_back({ e.name });
+	}
 	ASSERT_EQ(expected.size(), actual.size());</span>
 
-<span style = "background-color:#fdd">	for (int i = 0; i &lt; expected.size(); i++) {
-		ASSERT_EQ(expected[i], actual[i].name);
-	}
+<span style = "background-color:#fdd">	EXPECT_EQ(expected, actual);
 }</span>
 
 <span style = "background-color:#dfd">TEST_F(Fixture, NoExceptionWhileRun) {

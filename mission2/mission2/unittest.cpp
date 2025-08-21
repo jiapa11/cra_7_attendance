@@ -37,6 +37,15 @@ TEST_F(Fixture, Get500Lines) {
 	EXPECT_EQ(500, checker.GetNumLinesOfRawData());
 }
 
+TEST_F(Fixture, comparator) {
+	std::vector<PlayerInfoForPrint> expected;
+	expected.push_back({ "Umar", 48, "SILVER" });
+	std::vector<PlayerInfoForPrint> actual;
+	actual.push_back({ "Daisy", 45, "SILVER" });
+
+	EXPECT_NE(expected, actual);
+}
+
 TEST_F(Fixture, AllPlayersPointCorrect) {
 	std::vector<PlayerInfoForPrint> expected;
 
@@ -69,23 +78,19 @@ TEST_F(Fixture, AllPlayersPointCorrect) {
 
 	ASSERT_EQ(expected.size(), actual.size());
 
-	EXPECT_THAT(expected, testing::ContainerEq(actual));
-	//ASSERT_EQ(expected, actual);
-	//for (int i = 0; i < expected.size(); i++) {
-	//	ASSERT_EQ(expected[i].name, actual[i].name);
-	//	ASSERT_EQ(expected[i].point, actual[i].point);
-	//	ASSERT_EQ(expected[i].grade, actual[i].grade);
-	//}
+	EXPECT_EQ(expected, actual);
 }
 
 TEST_F(Fixture, IdentifyRemovedPlayers) {
 	vector<string> expected = { "Bob", "Zane" };
-	vector<PlayerInfo> actual = checker.GetRemovedPlayers();
+	vector<PlayerInfo> v = checker.GetRemovedPlayers();
+	std::vector<string> actual;
+	for (auto e : v) {
+		actual.push_back({ e.name });
+	}
 	ASSERT_EQ(expected.size(), actual.size());
 
-	for (int i = 0; i < expected.size(); i++) {
-		ASSERT_EQ(expected[i], actual[i].name);
-	}
+	EXPECT_EQ(expected, actual);
 }
 
 TEST_F(Fixture, NoExceptionWhileRun) {
