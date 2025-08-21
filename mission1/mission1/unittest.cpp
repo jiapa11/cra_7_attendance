@@ -6,9 +6,8 @@ protected:
 	AttendanceChecker checker;
 
 	void SetUp() override {
-		checker.GetInput();
-		checker.Parse();
-		checker.AssignLevel();
+		checker.Init();
+
 	}
 
 	void TearDown() override {
