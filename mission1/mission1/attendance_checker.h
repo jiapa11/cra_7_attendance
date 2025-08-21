@@ -26,7 +26,7 @@ int wed[100];
 int weeken[100];
 
 
-void input2(string w, string wk) {
+void ParseLine(string w, string wk) {
 	//ID 부여
 	if (id1.count(w) == 0) {
 		id1.insert({ w, ++id_cnt });
@@ -84,13 +84,27 @@ void input2(string w, string wk) {
 	points[id2] += add_point;
 }
 
-void input() {
-	ifstream fin{ "attendance_weekday_500.txt" }; //500개 데이터 입력
+const string INPUT_DATA = "attendance_weekday_500.txt";
+const int THRESHOLD_FOR_GOLD_LEVEL = 50;
+const int THRESHOLD_FOR_SILVER_LEVEL = 30;
+
+enum class Level {
+	NORMAL = 0,
+	GOLD = 1,
+	SILVER = 2,
+};
+
+void GetInputAndParse() {
+	ifstream fin{ INPUT_DATA }; //500개 데이터 입력
 	for (int i = 0; i < 500; i++) {
-		string t1, t2;
-		fin >> t1 >> t2;
-		input2(t1, t2);
+		string name, day;
+		fin >> name >> day;
+		ParseLine(name, day);
 	}
+}
+
+void Run() {
+	GetInputAndParse();
 
 	for (int i = 1; i <= id_cnt; i++) {
 		if (dat[i][2] > 9) {
@@ -101,24 +115,27 @@ void input() {
 			points[i] += 10;
 		}
 
-		if (points[i] >= 50) {
-			grade[i] = 1;
+		if (points[i] >= THRESHOLD_FOR_GOLD_LEVEL) {
+			// gold
+			grade[i] = static_cast<int>(Level::GOLD);
 		}
-		else if (points[i] >= 30) {
-			grade[i] = 2;
+		else if (points[i] >= THRESHOLD_FOR_SILVER_LEVEL) {
+			// silver
+			grade[i] = static_cast<int>(Level::SILVER);
 		}
 		else {
-			grade[i] = 0;
+			// normal
+			grade[i] = static_cast<int>(Level::NORMAL);
 		}
 
 		cout << "NAME : " << names[i] << ", ";
 		cout << "POINT : " << points[i] << ", ";
 		cout << "GRADE : ";
 
-		if (grade[i] == 1) {
+		if (grade[i] == static_cast<int>(Level::GOLD)) {
 			cout << "GOLD" << "\n";
 		}
-		else if (grade[i] == 2) {
+		else if (grade[i] == static_cast<int>(Level::SILVER)) {
 			cout << "SILVER" << "\n";
 		}
 		else {
