@@ -20,9 +20,6 @@ struct PlayerInfo {
 
 class AttendanceChecker {
 public:
-	const int NUM_OF_LINES_FOR_RAW_DATA = 500;
-	vector<Attendance> raw_data;
-
 	void GetInput() {
 		ifstream fin{ INPUT_DATA }; //500개 데이터 입력
 		for (int i = 0; i < NUM_OF_LINES_FOR_RAW_DATA; i++) {
@@ -130,27 +127,24 @@ public:
 		return grade[i] != GOLD && grade[i] != SILVER && wed[i] == 0 && weeken[i] == 0;
 	}
 
+	int AssignAndGetID(string name) {
+		if (id1.count(name) == 0) {
+			id1.insert({ name, ++id_cnt });
+
+			//if (w == "Daisy") {
+			//	int debug = 1;
+			//}
+
+			names[id_cnt] = name;
+		}
+		return id1[name];
+	}
+
 	void ParseLine(Attendance record/*string w, string wk*/) {
 		string w = record.name;
 		string wk = record.day;
 
-		//ID 부여
-		if (id1.count(w) == 0) {
-			id1.insert({ w, ++id_cnt });
-
-			if (w == "Daisy") {
-				int debug = 1;
-			}
-
-			names[id_cnt] = w;
-		}
-		int id2 = id1[w];
-
-		//디버깅용
-		if (w == "Daisy") {
-			int debug = 1;
-		}
-
+		int id = AssignAndGetID(w);
 
 		int add_point = 0;
 		int index = 0;
@@ -165,7 +159,7 @@ public:
 		if (wk == "wednesday") {
 			index = 2;
 			add_point += 3;
-			wed[id2] += 1;
+			wed[id] += 1;
 		}
 		if (wk == "thursday") {
 			index = 3;
@@ -178,20 +172,23 @@ public:
 		if (wk == "saturday") {
 			index = 5;
 			add_point += 2;
-			weeken[id2] += 1;
+			weeken[id] += 1;
 		}
 		if (wk == "sunday") {
 			index = 6;
 			add_point += 2;
-			weeken[id2] += 1;
+			weeken[id] += 1;
 		}
 
 		//사용자ID별 요일 데이터에 1씩 증가
-		dat[id2][index] += 1;
-		points[id2] += add_point;
+		dat[id][index] += 1;
+		points[id] += add_point;
 	}
 
 private:
+	const int NUM_OF_LINES_FOR_RAW_DATA = 500;
+	vector<Attendance> raw_data;
+
 	map<string, int> id1;
 	int id_cnt = 0;
 
