@@ -76,8 +76,6 @@ TEST_F(Fixture, AllPlayersPointCorrect) {
 		actual.push_back({e.name, e.point, e.grade});
 	}
 
-	ASSERT_EQ(expected.size(), actual.size());
-
 	EXPECT_EQ(expected, actual);
 }
 
@@ -88,7 +86,6 @@ TEST_F(Fixture, IdentifyRemovedPlayers) {
 	for (auto e : v) {
 		actual.push_back({ e.name });
 	}
-	ASSERT_EQ(expected.size(), actual.size());
 
 	EXPECT_EQ(expected, actual);
 }

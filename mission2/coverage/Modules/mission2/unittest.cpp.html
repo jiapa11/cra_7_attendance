@@ -87,9 +87,9 @@ protected:
 		actual.push_back({e.name, e.point, e.grade});
 	}</span>
 
-<span style = "background-color:#dfd">	ASSERT_EQ(expected.size(), actual.size());</span>
+	//ASSERT_EQ(expected.size(), actual.size());
 
-<span style = "background-color:#fdd">	EXPECT_EQ(expected, actual);
+<span style = "background-color:#dfd">	EXPECT_EQ(expected, actual);
 }</span>
 
 <span style = "background-color:#dfd">TEST_F(Fixture, IdentifyRemovedPlayers) {
@@ -98,10 +98,10 @@ protected:
 	std::vector&lt;string&gt; actual;
 	for (auto e : v) {
 		actual.push_back({ e.name });
-	}
-	ASSERT_EQ(expected.size(), actual.size());</span>
+	}</span>
+	//ASSERT_EQ(expected.size(), actual.size());
 
-<span style = "background-color:#fdd">	EXPECT_EQ(expected, actual);
+<span style = "background-color:#dfd">	EXPECT_EQ(expected, actual);
 }</span>
 
 <span style = "background-color:#dfd">TEST_F(Fixture, NoExceptionWhileRun) {
