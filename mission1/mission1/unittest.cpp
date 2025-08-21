@@ -4,6 +4,11 @@
 class Fixture : public ::testing::Test {
 protected:
 	AttendanceChecker checker;
+	struct PlayerInfoForPrint {
+		string name;
+		int point;
+		string level;
+	};
 
 	void SetUp() override {
 		checker.Init();
@@ -42,22 +47,22 @@ TEST_F(Fixture, AllPlayersPointCorrect) {
 	expected.push_back({ "Oscar", 13, "NORMAL" });
 	expected.push_back({ "Zane", 1, "NORMAL" });
 
-	std::vector<PlayerInfoForPrint> actual = checker.GetAllPlayersInfo();
+	std::vector<PlayerInfo> actual = checker.GetAllPlayersInfo();
 	ASSERT_EQ(expected.size(), actual.size());
 
 	for (int i = 0; i < expected.size(); i++) {
 		ASSERT_EQ(expected[i].name, actual[i].name);
 		ASSERT_EQ(expected[i].point, actual[i].point);
-		ASSERT_EQ(expected[i].level, actual[i].level);
+		ASSERT_EQ(expected[i].level, actual[i].grade_string);
 	}
 }
 
 TEST_F(Fixture, IdentifyRemovedPlayers) {
 	vector<string> expected = { "Bob", "Zane" };
-	vector<string> actual = checker.GetRemovedPlayers();
+	vector<PlayerInfo> actual = checker.GetRemovedPlayers();
 	ASSERT_EQ(expected.size(), actual.size());
 
 	for (int i = 0; i < expected.size(); i++) {
-		ASSERT_EQ(expected[i], actual[i]);
+		ASSERT_EQ(expected[i], actual[i].name);
 	}
 }

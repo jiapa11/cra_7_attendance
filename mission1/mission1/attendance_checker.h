@@ -8,17 +8,11 @@
 
 using namespace std;
 
-struct PlayerInfoForPrint {
-	string name;
-	int point;
-	string level;
-};
-
 struct PlayerInfo {
 	string name;
 	int point;
 	int grade;
-	string level;
+	string grade_string;
 	int attendance_per_day[7];	
 };
 
@@ -28,57 +22,20 @@ public:
 		string name, day;
 	};
 
-	void Run() {
-		Init();
-		Print();
-	}
+	AttendanceChecker() = default;
+	~AttendanceChecker() = default;
 
-	void Init() {
-		GetInputFromFile();
-		UpdatePoints();
-		
-		AssignGradeToPlayers();
-		UpdateRemovedPlayers();
-	}
+	void Run();
 
-	void Print() {
-		PrintAllPlayers();
-		PrintRemovedPlayers();
-	}
+	void Init();
 
-	int GetNumLinesOfRawData() {
-		return raw_data.size();
-	}
+	void Print();
 
-	vector<PlayerInfoForPrint> GetAllPlayersInfo() {
-		vector<PlayerInfoForPrint> v;
-		for (auto player : players) {
-			v.push_back({ player.name, player.point, GetLevelString(player.grade) });
-		}
-		return v;
-	}
+	int GetNumLinesOfRawData() { return raw_data.size(); }
 
-	vector<string> GetRemovedPlayers() {
-		vector<string> v;
-		for (auto removed_player : removed_players) {
-			v.push_back(removed_player.name);
-		}
-		return v;
-	}
+	vector<PlayerInfo> GetAllPlayersInfo() { return players; }
 
-	void UpdateAttendance(Attendance record) {
-		string name = record.name;
-		string day = record.day;
-
-		PlayerInfo *player = nullptr;
-		if (IsNewPlayer(name)) {
-			player = RegisterAndGetNewPlayer(name);
-		}
-		else player = GetExistingPlayer(name);
-
-		player->attendance_per_day[GetDayIndex(day)] += 1;		
-		player->point += GetAddPoint(day);
-	}
+	vector<PlayerInfo> GetRemovedPlayers() { return removed_players; }
 
 private:
 	const int NUM_OF_LINES_FOR_RAW_DATA = 500;
@@ -98,83 +55,43 @@ private:
 	const int GOLD = 1;
 	const int SILVER = 2;
 
-	const int MONDAY = 0;
-	const int TUESDAY = 1;
-	const int WEDNESDAY = 2;
-	const int THURSDAY = 3;
-	const int FRIDAY = 4;
-	const int SATURDAY = 5;
-	const int SUNDAY = 6;
-	const int INVALID_INPUT = -1;
+	const static int MONDAY = 0;
+	const static int TUESDAY = 1;
+	const static int WEDNESDAY = 2;
+	const static int THURSDAY = 3;
+	const static int FRIDAY = 4;
+	const static int SATURDAY = 5;
+	const static int SUNDAY = 6;
+	const static int INVALID_INPUT = -1;
 
-	void GetInputFromFile() {
-		ifstream fin{ INPUT_DATA }; //500개 데이터 입력
-		for (int i = 0; i < NUM_OF_LINES_FOR_RAW_DATA; i++) {
-			string name, day;
-			fin >> name >> day;
-			raw_data.push_back({ name, day });
-		}
-	}
+	void GetInputFromFile();
 
-	void UpdatePoints() {
-		for (const Attendance& attendance : raw_data) {
-			UpdateAttendance(attendance);
-		}
+	void UpdatePoints();
 
-		for (PlayerInfo& player : players) {
-			if (player.attendance_per_day[WEDNESDAY] >= 10) player.point += 10;
-			if ((player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY]) >= 10) player.point += 10;
-		}
-	}
+	bool IsNewPlayer(string name);
 
-	void AssignGradeToPlayers() {
-		for (PlayerInfo& player : players) {
-			if (player.point >= THRESHOLD_FOR_GOLD_LEVEL) player.grade = GOLD;
-			else if (player.point >= THRESHOLD_FOR_SILVER_LEVEL) player.grade = SILVER;
-			else player.grade = NORMAL;
-		}
-	}
+	PlayerInfo* RegisterAndGetNewPlayer(string name);
 
-	void UpdateRemovedPlayers() {
-		for (PlayerInfo& player : players) {
-			if (NeedToRemove(player)) removed_players.push_back(player);
-		}
-	}
+	PlayerInfo* GetExistingPlayer(string name);
 
-	string GetLevelString(int level) {
+	void UpdateAttendance(Attendance record);
+
+	void AssignGradeToPlayers();
+
+	bool NeedToRemove(PlayerInfo player);
+
+	void UpdateRemovedPlayers();
+
+	string ToString(int level) {
 		if (level == 1) return "GOLD";
 		if (level == 2) return "SILVER";
 
 		return "NORMAL";
 	}
 
-	void PrintAllPlayers() {
-		for (auto player : players) {
-			cout << "NAME : " << player.name << ", ";
-			cout << "POINT : " << player.point << ", ";
-			cout << "GRADE : " << GetLevelString(player.grade) << "\n";
-		}
-	}
+	void PrintAllPlayers();
 
-	void PrintRemovedPlayers() {
-		std::cout << "\n";
-		std::cout << "Removed player\n";
-		std::cout << "==============\n";
-
-		for (auto removed_player : removed_players) {
-			std::cout << removed_player.name << "\n";
-		}
-	}
-
-
-	bool NeedToRemove(PlayerInfo player) {
-		if (player.grade == GOLD) return false;
-		if (player.grade == SILVER) return false;
-		if (player.attendance_per_day[WEDNESDAY] != 0) return false;
-		if (player.attendance_per_day[SATURDAY] != 0 || player.attendance_per_day[SUNDAY] != 0) return false;
-
-		return true;
-	}
+	void PrintRemovedPlayers();
 
 	int GetDayIndex(string day) {
 		if (day == "monday") return MONDAY;
@@ -200,23 +117,5 @@ private:
 		if (day == "sunday") return 2;
 
 		return 0;
-	}
-
-	bool IsNewPlayer(string name) {
-		if (name_to_id_map.count(name) == 0) return true;
-		return false;
-	}
-
-	PlayerInfo* RegisterAndGetNewPlayer(string name) {
-		PlayerInfo new_player{};
-		name_to_id_map.insert({ name, ++id_cnt });
-		new_player.name = name;
-		players.push_back(new_player);
-		return &(players[id_cnt - 1]);
-	}
-
-	PlayerInfo* GetExistingPlayer(string name) {
-		int id = name_to_id_map[name];
-		return &(players[id - 1]);
 	}
 };

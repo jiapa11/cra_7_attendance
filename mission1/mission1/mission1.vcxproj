@@ -22,6 +22,7 @@
     <Text Include="attendance_weekday_500.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="attendance_checker.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="unittest.cpp" />
   </ItemGroup>
