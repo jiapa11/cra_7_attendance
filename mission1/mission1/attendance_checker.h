@@ -141,59 +141,51 @@ public:
 	}
 
 	int GetDayIndex(string day) {
-		if (day == "monday") return 0;
-		if (day == "tuesday") return 1;
-		if (day == "wednesday") return 2;
-		if (day == "thursday") return 3;
-		if (day == "friday") return 4;
-		if (day == "saturday") return 5;
-		if (day == "sunday") return 6;
+		if (day == "monday") return MONDAY;
+		if (day == "tuesday") return TUESDAY;
+		if (day == "wednesday") return WEDNESDAY;
+		if (day == "thursday") return THURSDAY;
+		if (day == "friday") return FRIDAY;
+		if (day == "saturday") return SATURDAY;
+		if (day == "sunday") return SUNDAY;
 
-		return -1;
+		return INVALID_INPUT;
 	}
 
+	int GetAddPoint(string day, int id) {
+		int add_point = 0;
+		if (day == "monday") {
+			add_point++;
+		}
+		if (day == "tuesday") {
+			add_point++;
+		}
+		if (day == "wednesday") {
+			add_point += 3;
+		}
+		if (day == "thursday") {
+			add_point++;
+		}
+		if (day == "friday") {
+			add_point++;
+		}
+		if (day == "saturday") {
+			add_point += 2;
+
+		}
+		if (day == "sunday") {
+			add_point += 2;
+		}
+		return add_point;
+	}
 
 	void ParseLine(Attendance record/*string w, string wk*/) {
-		string w = record.name;
-		string wk = record.day;
+		string name = record.name;
+		string day = record.day;
 
-		int id = AssignAndGetID(w);
+		int id = AssignAndGetID(name);
 
-		int add_point = 0;
-		int index = 0;
-		if (wk == "monday") {
-			index = 0;
-			add_point++;
-		}
-		if (wk == "tuesday") {
-			index = 1;
-			add_point++;
-		}
-		if (wk == "wednesday") {
-			index = 2;
-			add_point += 3;
-			wed[id] += 1;
-		}
-		if (wk == "thursday") {
-			index = 3;
-			add_point++;
-		}
-		if (wk == "friday") {
-			index = 4;
-			add_point++;
-		}
-		if (wk == "saturday") {
-			index = 5;
-			add_point += 2;
-			weeken[id] += 1;
-		}
-		if (wk == "sunday") {
-			index = 6;
-			add_point += 2;
-			weeken[id] += 1;
-		}
-
-		int day_index = GetDayIndex(wk);
+		int day_index = GetDayIndex(day);
 		if (day_index == -1) {
 			cout << "ERROR" << " invalid day" << endl;
 			while (1);
@@ -201,7 +193,14 @@ public:
 
 		//사용자ID별 요일 데이터에 1씩 증가
 		dat[id][day_index] += 1;
-		points[id] += add_point;
+		points[id] += GetAddPoint(day, id);
+
+		if (day_index == WEDNESDAY) {
+			wed[id] += 1;
+		}
+		if (day_index == SATURDAY || day_index == SUNDAY) {
+			weeken[id] += 1;
+		}
 	}
 
 private:
@@ -227,4 +226,13 @@ private:
 	const int NORMAL = 0;
 	const int GOLD = 1;
 	const int SILVER = 2;
+
+	const int MONDAY = 0;
+	const int TUESDAY = 1;
+	const int WEDNESDAY = 2;
+	const int THURSDAY = 3;
+	const int FRIDAY = 4;
+	const int SATURDAY = 5;
+	const int SUNDAY = 6;
+	const int INVALID_INPUT = -1;
 };
