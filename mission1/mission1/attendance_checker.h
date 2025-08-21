@@ -13,6 +13,10 @@ struct Node {
 	string wk;
 };
 
+struct Attendance {
+	string name, day;
+};
+
 map<string, int> id1;
 int id_cnt = 0;
 
@@ -25,8 +29,10 @@ string names[100];
 int wed[100];
 int weeken[100];
 
+void ParseLine(Attendance record/*string w, string wk*/) {
+	string w = record.name;
+	string wk = record.day;
 
-void ParseLine(string w, string wk) {
 	//ID ºÎ¿©
 	if (id1.count(w) == 0) {
 		id1.insert({ w, ++id_cnt });
@@ -99,9 +105,11 @@ void GetInputAndParse() {
 	for (int i = 0; i < 500; i++) {
 		string name, day;
 		fin >> name >> day;
-		ParseLine(name, day);
+		ParseLine({name, day});
 	}
 }
+
+bool NeedToRemove(int i);
 
 void Run() {
 	GetInputAndParse();
@@ -147,9 +155,13 @@ void Run() {
 	std::cout << "Removed player\n";
 	std::cout << "==============\n";
 	for (int i = 1; i <= id_cnt; i++) {
-
-		if (grade[i] != 1 && grade[i] != 2 && wed[i] == 0 && weeken[i] == 0) {
+		if (NeedToRemove(i)) {
 			std::cout << names[i] << "\n";
 		}
 	}
+}
+
+bool NeedToRemove(int i)
+{
+	return grade[i] != static_cast<int>(Level::GOLD) && grade[i] != static_cast<int>(Level::SILVER) && wed[i] == 0 && weeken[i] == 0;
 }
