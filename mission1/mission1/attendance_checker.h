@@ -71,13 +71,13 @@ public:
 		return v;
 	}
 
-	int AssignAndGetID(string name) {
-		if (name_to_id_map.count(name) == 0) {
-			name_to_id_map.insert({ name, ++id_cnt });
-			names[id_cnt] = name;
-		}
-		return name_to_id_map[name];
-	}
+	//int AssignAndGetID(string name) {
+	//	if (name_to_id_map.count(name) == 0) {
+	//		name_to_id_map.insert({ name, ++id_cnt });
+	//		names[id_cnt] = name;
+	//	}
+	//	return name_to_id_map[name];
+	//}
 
 	bool IsNewPlayer(string name) {
 		if (name_to_id_map.count(name) == 0) return true;
@@ -88,13 +88,13 @@ public:
 		string name = record.name;
 		string day = record.day;
 		
-		int previous_id = id_cnt;
-		int id = AssignAndGetID(name);
+		//int previous_id = id_cnt;
+		//int id = AssignAndGetID(name);
 
 		Player *player = nullptr;
-		if (/*IsNewPlayer(name)*/ id > previous_id) {
+		if (IsNewPlayer(name)) {
 			Player new_player{};
-			//name_to_id_map.insert({ name, ++id_cnt });
+			name_to_id_map.insert({ name, ++id_cnt });
 			new_player.name = name;
 			players.push_back(new_player);
 			player = &(players[id_cnt-1]);
@@ -110,8 +110,8 @@ public:
 			while (1);
 		}
 
-		dat[id][day_index] += 1; //사용자ID별 요일 데이터에 1씩 증가
-		points[id] += GetAddPoint(day);
+		//dat[id][day_index] += 1; //사용자ID별 요일 데이터에 1씩 증가
+		//points[id] += GetAddPoint(day);
 
 		player->attendance_per_day[day_index] += 1;
 		player->point += GetAddPoint(day);
@@ -128,10 +128,10 @@ private:
 	vector<Player> removed_players;
 
 
-	int dat[100][100]; 	//dat[사용자ID][요일]
-	int points[100];
-	int grade[100];
-	string names[100];
+	//int dat[100][100]; 	//dat[사용자ID][요일]
+	//int points[100];
+	//int grade[100];
+	//string names[100];
 
 	const string INPUT_DATA = "attendance_weekday_500.txt";
 	const int THRESHOLD_FOR_GOLD_LEVEL = 50;
@@ -166,25 +166,25 @@ private:
 	}
 
 	void AssignLevel() {
-		for (int i = 1; i <= id_cnt; i++) {
-			if (dat[i][WEDNESDAY] >= 10) {
-				points[i] += 10;
-			}
+		//for (int i = 1; i <= id_cnt; i++) {
+		//	if (dat[i][WEDNESDAY] >= 10) {
+		//		points[i] += 10;
+		//	}
 
-			if (dat[i][SATURDAY] + dat[i][SUNDAY] >= 10) {
-				points[i] += 10;
-			}
+		//	if (dat[i][SATURDAY] + dat[i][SUNDAY] >= 10) {
+		//		points[i] += 10;
+		//	}
 
-			if (points[i] >= THRESHOLD_FOR_GOLD_LEVEL) {
-				grade[i] = GOLD;
-			}
-			else if (points[i] >= THRESHOLD_FOR_SILVER_LEVEL) {
-				grade[i] = SILVER;
-			}
-			else {
-				grade[i] = NORMAL;
-			}
-		}
+		//	if (points[i] >= THRESHOLD_FOR_GOLD_LEVEL) {
+		//		grade[i] = GOLD;
+		//	}
+		//	else if (points[i] >= THRESHOLD_FOR_SILVER_LEVEL) {
+		//		grade[i] = SILVER;
+		//	}
+		//	else {
+		//		grade[i] = NORMAL;
+		//	}
+		//}
 
 		for (Player& player : players) {
 			if (player.attendance_per_day[WEDNESDAY] >= 10) player.point += 10;
@@ -242,14 +242,14 @@ private:
 		//}
 	}
 
-	bool NeedToRemove(int i) {
-		if (grade[i] == GOLD) return false;
-		if (grade[i] == SILVER) return false;
-		if (dat[i][WEDNESDAY] != 0) return false;
-		if (dat[i][SATURDAY] != 0 || dat[i][SUNDAY] != 0) return false;
+	//bool NeedToRemove(int i) {
+	//	if (grade[i] == GOLD) return false;
+	//	if (grade[i] == SILVER) return false;
+	//	if (dat[i][WEDNESDAY] != 0) return false;
+	//	if (dat[i][SATURDAY] != 0 || dat[i][SUNDAY] != 0) return false;
 
-		return true;		
-	}
+	//	return true;		
+	//}
 
 	bool NeedToRemove(Player player) {
 		if (player.grade == GOLD) return false;
