@@ -191,20 +191,6 @@ public:
 		points[id2] += add_point;
 	}
 
-	const string INPUT_DATA = "attendance_weekday_500.txt";
-	const int THRESHOLD_FOR_GOLD_LEVEL = 50;
-	const int THRESHOLD_FOR_SILVER_LEVEL = 30;
-
-	const int NORMAL = 0;
-	const int GOLD = 1;
-	const int SILVER = 2;
-
-	//enum class Level {
-	//	NORMAL = 0,
-	//	GOLD = 1,
-	//	SILVER = 2,
-	//};
-
 private:
 	map<string, int> id1;
 	int id_cnt = 0;
@@ -217,4 +203,12 @@ private:
 
 	int wed[100];
 	int weeken[100];
+
+	const string INPUT_DATA = "attendance_weekday_500.txt";
+	const int THRESHOLD_FOR_GOLD_LEVEL = 50;
+	const int THRESHOLD_FOR_SILVER_LEVEL = 30;
+
+	const int NORMAL = 0;
+	const int GOLD = 1;
+	const int SILVER = 2;
 };
