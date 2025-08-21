@@ -118,8 +118,7 @@ void AttendanceChecker::AssignGradeToPlayers() {
 }
 
 bool AttendanceChecker::NeedToRemove(PlayerInfo player) {
-	if (player.grade == GradeString::GOLD) return false;
-	if (player.grade == GradeString::SILVER) return false;
+	if (player.grade != GradeString::NORMAL) return false;
 	if (player.attendance_per_day[WEDNESDAY] != 0) return false;
 	if (player.attendance_per_day[SATURDAY] != 0 || player.attendance_per_day[SUNDAY] != 0) return false;
 
