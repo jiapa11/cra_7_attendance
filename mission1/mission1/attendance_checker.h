@@ -34,7 +34,7 @@ public:
 	}
 
 	void Parse() {
-		for (const Attendance &attendance : raw_data) {
+		for (const Attendance& attendance : raw_data) {
 			ParseLine(attendance);
 		}
 	}
@@ -71,7 +71,7 @@ public:
 	vector<PlayerInfo> GetAllPlayersInfo() {
 		vector<PlayerInfo> v;
 		for (int i = 1; i <= id_cnt; i++) {
-			v.push_back({names[i], points[i], GetLevelString(grade[i])});
+			v.push_back({ names[i], points[i], GetLevelString(grade[i]) });
 		}
 		return v;
 	}
@@ -140,6 +140,19 @@ public:
 		return id1[name];
 	}
 
+	int GetDayIndex(string day) {
+		if (day == "monday") return 0;
+		if (day == "tuesday") return 1;
+		if (day == "wednesday") return 2;
+		if (day == "thursday") return 3;
+		if (day == "friday") return 4;
+		if (day == "saturday") return 5;
+		if (day == "sunday") return 6;
+
+		return -1;
+	}
+
+
 	void ParseLine(Attendance record/*string w, string wk*/) {
 		string w = record.name;
 		string wk = record.day;
@@ -180,8 +193,14 @@ public:
 			weeken[id] += 1;
 		}
 
+		int day_index = GetDayIndex(wk);
+		if (day_index == -1) {
+			cout << "ERROR" << " invalid day" << endl;
+			while (1);
+		}
+
 		//사용자ID별 요일 데이터에 1씩 증가
-		dat[id][index] += 1;
+		dat[id][day_index] += 1;
 		points[id] += add_point;
 	}
 
