@@ -7,5 +7,13 @@ int main() {
 	return RUN_ALL_TESTS();
 
 	AttendanceChecker checker;
-	checker.Run();
+	try {
+		checker.Run();
+	}
+	catch (const std::exception& e) {
+		std::cout << e.what() << std::endl;
+		return -1;
+	}
+
+	return 0;	
 }

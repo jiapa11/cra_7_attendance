@@ -20,7 +20,7 @@ TEST_F(Fixture, Get500Lines) {
 }
 
 TEST_F(Fixture, AllPlayersPointCorrect) {
-	std::vector<PlayerInfo> expected;
+	std::vector<PlayerInfoForPrint> expected;
 
 	expected.push_back({ "Umar", 48, "SILVER"});
 	expected.push_back({ "Daisy", 45, "SILVER" });
@@ -42,7 +42,7 @@ TEST_F(Fixture, AllPlayersPointCorrect) {
 	expected.push_back({ "Oscar", 13, "NORMAL" });
 	expected.push_back({ "Zane", 1, "NORMAL" });
 
-	std::vector<PlayerInfo> actual = checker.GetAllPlayersInfo();
+	std::vector<PlayerInfoForPrint> actual = checker.GetAllPlayersInfo();
 	ASSERT_EQ(expected.size(), actual.size());
 
 	for (int i = 0; i < expected.size(); i++) {

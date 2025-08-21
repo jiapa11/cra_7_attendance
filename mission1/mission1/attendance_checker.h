@@ -8,17 +8,13 @@
 
 using namespace std;
 
-struct Attendance {
-	string name, day;
-};
-
-struct PlayerInfo {
+struct PlayerInfoForPrint {
 	string name;
 	int point;
 	string level;
 };
 
-struct Player {
+struct PlayerInfo {
 	string name;
 	int point;
 	int grade;
@@ -28,15 +24,20 @@ struct Player {
 
 class AttendanceChecker {
 public:
+	struct Attendance {
+		string name, day;
+	};
+
+
 	void Run() {
 		Init();
 		Print();
 	}
 
 	void Init() {
-		GetInput();
-		Parse();
-		AssignLevel();
+		GetInputFromFile();
+		ParseInput();
+		AssignLevelToPlayers();
 		UpdateRemovedPlayers();
 	}
 
@@ -49,18 +50,12 @@ public:
 		return raw_data.size();
 	}
 
-	vector<PlayerInfo> GetAllPlayersInfo() {
-		vector<PlayerInfo> v;
+	vector<PlayerInfoForPrint> GetAllPlayersInfo() {
+		vector<PlayerInfoForPrint> v;
 		for (auto player : players) {
 			v.push_back({ player.name, player.point, GetLevelString(player.grade) });
 		}
 		return v;
-	}
-
-	void UpdateRemovedPlayers() {
-		for (Player& player : players) {
-			if (NeedToRemove(player)) removed_players.push_back(player);
-		}
 	}
 
 	vector<string> GetRemovedPlayers() {
@@ -71,49 +66,19 @@ public:
 		return v;
 	}
 
-	//int AssignAndGetID(string name) {
-	//	if (name_to_id_map.count(name) == 0) {
-	//		name_to_id_map.insert({ name, ++id_cnt });
-	//		names[id_cnt] = name;
-	//	}
-	//	return name_to_id_map[name];
-	//}
-
-	bool IsNewPlayer(string name) {
-		if (name_to_id_map.count(name) == 0) return true;
-		return false;
-	}
-
 	void ParseLine(Attendance record) {
 		string name = record.name;
 		string day = record.day;
-		
-		//int previous_id = id_cnt;
-		//int id = AssignAndGetID(name);
 
-		Player *player = nullptr;
+		PlayerInfo *player = nullptr;
 		if (IsNewPlayer(name)) {
-			Player new_player{};
-			name_to_id_map.insert({ name, ++id_cnt });
-			new_player.name = name;
-			players.push_back(new_player);
-			player = &(players[id_cnt-1]);
+			player = RegisterAndGetNewPlayer(name);
 		}
 		else {
-			int id = name_to_id_map[name];
-			player = &(players[id-1]);
+			player = GetExistingPlayer(name);
 		}
 
-		int day_index = GetDayIndex(day);
-		if (day_index == -1) {
-			cout << "ERROR" << " invalid day" << endl;
-			while (1);
-		}
-
-		//dat[id][day_index] += 1; //사용자ID별 요일 데이터에 1씩 증가
-		//points[id] += GetAddPoint(day);
-
-		player->attendance_per_day[day_index] += 1;
+		player->attendance_per_day[GetDayIndex(day)] += 1;
 		player->point += GetAddPoint(day);
 	}
 
@@ -124,14 +89,8 @@ private:
 	map<string, int> name_to_id_map;
 	int id_cnt = 0;
 
-	vector<Player> players;
-	vector<Player> removed_players;
-
-
-	//int dat[100][100]; 	//dat[사용자ID][요일]
-	//int points[100];
-	//int grade[100];
-	//string names[100];
+	vector<PlayerInfo> players;
+	vector<PlayerInfo> removed_players;
 
 	const string INPUT_DATA = "attendance_weekday_500.txt";
 	const int THRESHOLD_FOR_GOLD_LEVEL = 50;
@@ -150,7 +109,7 @@ private:
 	const int SUNDAY = 6;
 	const int INVALID_INPUT = -1;
 
-	void GetInput() {
+	void GetInputFromFile() {
 		ifstream fin{ INPUT_DATA }; //500개 데이터 입력
 		for (int i = 0; i < NUM_OF_LINES_FOR_RAW_DATA; i++) {
 			string name, day;
@@ -159,40 +118,26 @@ private:
 		}
 	}
 
-	void Parse() {
+	void ParseInput() {
 		for (const Attendance& attendance : raw_data) {
 			ParseLine(attendance);
 		}
 	}
 
-	void AssignLevel() {
-		//for (int i = 1; i <= id_cnt; i++) {
-		//	if (dat[i][WEDNESDAY] >= 10) {
-		//		points[i] += 10;
-		//	}
-
-		//	if (dat[i][SATURDAY] + dat[i][SUNDAY] >= 10) {
-		//		points[i] += 10;
-		//	}
-
-		//	if (points[i] >= THRESHOLD_FOR_GOLD_LEVEL) {
-		//		grade[i] = GOLD;
-		//	}
-		//	else if (points[i] >= THRESHOLD_FOR_SILVER_LEVEL) {
-		//		grade[i] = SILVER;
-		//	}
-		//	else {
-		//		grade[i] = NORMAL;
-		//	}
-		//}
-
-		for (Player& player : players) {
+	void AssignLevelToPlayers() {
+		for (PlayerInfo& player : players) {
 			if (player.attendance_per_day[WEDNESDAY] >= 10) player.point += 10;
 			if ((player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY]) >= 10) player.point += 10;
 
 			if (player.point >= THRESHOLD_FOR_GOLD_LEVEL) player.grade = GOLD;
 			else if (player.point >= THRESHOLD_FOR_SILVER_LEVEL) player.grade = SILVER;
 			else player.grade = NORMAL;
+		}
+	}
+
+	void UpdateRemovedPlayers() {
+		for (PlayerInfo& player : players) {
+			if (NeedToRemove(player)) removed_players.push_back(player);
 		}
 	}
 
@@ -209,22 +154,6 @@ private:
 			cout << "POINT : " << player.point << ", ";
 			cout << "GRADE : " << GetLevelString(player.grade) << "\n";
 		}
-
-		//for (int i = 1; i <= id_cnt; i++) {
-		//	cout << "NAME : " << names[i] << ", ";
-		//	cout << "POINT : " << points[i] << ", ";
-		//	cout << "GRADE : ";
-
-		//	if (grade[i] == GOLD) {
-		//		cout << "GOLD" << "\n";
-		//	}
-		//	else if (grade[i] == SILVER) {
-		//		cout << "SILVER" << "\n";
-		//	}
-		//	else {
-		//		cout << "NORMAL" << "\n";
-		//	}
-		//}
 	}
 
 	void PrintRemovedPlayers() {
@@ -235,23 +164,10 @@ private:
 		for (auto removed_player : removed_players) {
 			std::cout << removed_player.name << "\n";
 		}
-		//for (int i = 1; i <= id_cnt; i++) {
-		//	if (NeedToRemove(i)) {
-		//		std::cout << names[i] << "\n";
-		//	}
-		//}
 	}
 
-	//bool NeedToRemove(int i) {
-	//	if (grade[i] == GOLD) return false;
-	//	if (grade[i] == SILVER) return false;
-	//	if (dat[i][WEDNESDAY] != 0) return false;
-	//	if (dat[i][SATURDAY] != 0 || dat[i][SUNDAY] != 0) return false;
 
-	//	return true;		
-	//}
-
-	bool NeedToRemove(Player player) {
+	bool NeedToRemove(PlayerInfo player) {
 		if (player.grade == GOLD) return false;
 		if (player.grade == SILVER) return false;
 		if (player.attendance_per_day[WEDNESDAY] != 0) return false;
@@ -269,6 +185,8 @@ private:
 		if (day == "saturday") return SATURDAY;
 		if (day == "sunday") return SUNDAY;
 
+		throw std::runtime_error("invalid day input: " + day);
+
 		return INVALID_INPUT;
 	}
 
@@ -282,5 +200,23 @@ private:
 		if (day == "sunday") return 2;
 
 		return 0;
+	}
+
+	bool IsNewPlayer(string name) {
+		if (name_to_id_map.count(name) == 0) return true;
+		return false;
+	}
+
+	PlayerInfo* RegisterAndGetNewPlayer(string name) {
+		PlayerInfo new_player{};
+		name_to_id_map.insert({ name, ++id_cnt });
+		new_player.name = name;
+		players.push_back(new_player);
+		return &(players[id_cnt - 1]);
+	}
+
+	PlayerInfo* GetExistingPlayer(string name) {
+		int id = name_to_id_map[name];
+		return &(players[id - 1]);
 	}
 };
