@@ -9,4 +9,5 @@ CRA7차 공통과제
 | D4 | O |
 | D5 | O |
 
-<img width="1121" height="682" alt="image" src="https://github.com/user-attachments/assets/6f4332f7-50ea-4fbc-becd-3ee4371e26e9" />
+<img width="1112" height="714" alt="image" src="https://github.com/user-attachments/assets/8ab2f516-81fe-4f19-bdf8-cd516ae8cee3" />
+
