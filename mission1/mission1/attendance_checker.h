@@ -1,10 +1,10 @@
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <vector>
 #include <map>
 #include <algorithm>
-#include "gmock/gmock.h"
 
 using namespace std;
 
@@ -24,6 +24,7 @@ string names[100];
 
 int wed[100];
 int weeken[100];
+
 
 void input2(string w, string wk) {
 	//ID ºÎ¿©
@@ -134,11 +135,4 @@ void input() {
 			std::cout << names[i] << "\n";
 		}
 	}
-}
-
-int main() {
-	//::testing::InitGoogleTest();
-	//return RUN_ALL_TESTS();
-
-	input();
 }

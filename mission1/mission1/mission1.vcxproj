@@ -22,10 +22,14 @@
     <Text Include="attendance_weekday_500.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="attendance.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="unittest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="attendance_checker.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
