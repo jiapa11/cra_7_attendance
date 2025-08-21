@@ -1,0 +1,177 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+        <meta charset="utf-8"/>
+	    <title>attendance_checker.cpp</title>
+	    <link href="../../third-party/google-code-prettify/prettify-CppCoverage.css" type="text/css" rel="stylesheet" />
+	    <script type="text/javascript" src="../../third-party/google-code-prettify/prettify.js"></script>
+	</head>
+    <body onload="prettyPrint()">
+        <h4></h4>
+        <pre class="prettyprint lang-cpp linenums">
+#include "attendance_checker.h"
+
+<span style = "background-color:#dfd">void AttendanceChecker::Run() {
+	Init();
+	Print();
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::Init() {
+	GetInputFromFile();
+	UpdatePoints();
+	AssignGradeToPlayers();
+	UpdateRemovedPlayersList();
+}</span>
+
+<span style = "background-color:#dfd">bool AttendanceChecker::IsCleared() {
+	if (raw_data.size() != 0) return false;
+	if (name_to_id_map.size() != 0) return false;
+	if (id_cnt != 0) return false;
+	if (players.size() != 0) return false;
+	if (removed_players.size() != 0) return false;
+	return true;
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::Clear() {
+	raw_data.clear();
+	name_to_id_map.clear();
+	id_cnt = 0;
+	players.clear();
+	removed_players.clear();
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::Print() {
+	PrintAllPlayers();
+	PrintRemovedPlayers();
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::GetInputFromFile() {
+	ifstream fin{ INPUT_DATA };
+	for (int i = 0; i &lt; NUM_OF_LINES_FOR_RAW_DATA; i++) {
+		string name, day;
+		fin &gt;&gt; name &gt;&gt; day;
+		raw_data.push_back({ name, day });
+	}
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::UpdateBasicPoints() {
+	for (const Attendance&amp; attendance : raw_data) {
+		UpdateAttendance(attendance);
+	}
+}</span>
+
+<span style = "background-color:#dfd">int AttendanceChecker::GetBonusPoints(PlayerInfo &amp;player) {
+	int bonus_points = 0;</span>
+	
+<span style = "background-color:#dfd">	int wednesday_attendance = player.attendance_per_day[WEDNESDAY];
+	if (wednesday_attendance &gt;= THRESHOLD_FOR_WEDNESDAY_ATTENDANCE_BONUS_POINT) {
+		bonus_points += WEDNESDAY_ATTENDANCE_BONUS_POINT;</span>
+	}
+
+<span style = "background-color:#dfd">	int weekend_attendance = player.attendance_per_day[SATURDAY] + player.attendance_per_day[SUNDAY];
+	if (weekend_attendance &gt;= THRESHOLD_FOR_WEEKEND_ATTENDANCE_BONUS_POINT) {
+		bonus_points += WEEKEND_ATTENDANCE_BONUS_POINT;</span>
+	}
+	
+<span style = "background-color:#dfd">	return bonus_points;
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::UpdateBonusPoints() {
+	for (PlayerInfo&amp; player : players) {
+		player.point += GetBonusPoints(player);
+	}
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::UpdatePoints() {
+	UpdateBasicPoints();
+	UpdateBonusPoints();
+}</span>
+
+<span style = "background-color:#dfd">bool AttendanceChecker::IsNewPlayer(string name) {
+	if (name_to_id_map.count(name) == 0) return true;
+	return false;
+}</span>
+
+<span style = "background-color:#dfd">PlayerInfo* AttendanceChecker::RegisterAndGetNewPlayer(string name) {
+	PlayerInfo new_player{};
+	name_to_id_map.insert({ name, ++id_cnt });
+	new_player.name = name;
+	players.push_back(new_player);
+	return &amp;(players[id_cnt - 1]);
+}</span>
+
+<span style = "background-color:#dfd">PlayerInfo* AttendanceChecker::GetExistingPlayer(string name) {
+	int id = name_to_id_map[name];
+	return &amp;(players[id - 1]);
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::UpdateAttendance(Attendance record) {
+	string name = record.name;
+	string day = record.day;</span>
+
+<span style = "background-color:#dfd">	PlayerInfo* player = nullptr;
+	if (IsNewPlayer(name)) {
+		player = RegisterAndGetNewPlayer(name);
+	}
+	else player = GetExistingPlayer(name);</span>
+
+<span style = "background-color:#dfd">	if (player) {
+		player-&gt;attendance_per_day[GetDayIndex(day)] += 1;
+		player-&gt;point += GetAddPoint(day);</span>
+	}
+<span style = "background-color:#dfd">}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::AssignGradeToPlayers() {
+	for (PlayerInfo&amp; player : players) {
+		std::unique_ptr&lt;Grade&gt; grade = GradeFactory::GetGrade(player.point);
+		player.grade = grade-&gt;GetGradeString();		
+	}
+}</span>
+
+<span style = "background-color:#dfd">bool AttendanceChecker::NeedToRemove(PlayerInfo player) {
+	if (player.grade == "GOLD") return false;
+	if (player.grade == "SILVER") return false;
+	if (player.attendance_per_day[WEDNESDAY] != 0) return false;
+	if (player.attendance_per_day[SATURDAY] != 0 || player.attendance_per_day[SUNDAY] != 0) return false;</span>
+
+<span style = "background-color:#dfd">	return true;
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::UpdateRemovedPlayersList() {
+	for (PlayerInfo&amp; player : players) {
+		if (NeedToRemove(player)) removed_players.push_back(player);
+	}
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::PrintAllPlayers() {
+	for (auto player : players) {
+		cout &lt;&lt; "NAME : " &lt;&lt; player.name &lt;&lt; ", ";
+		cout &lt;&lt; "POINT : " &lt;&lt; player.point &lt;&lt; ", ";
+		cout &lt;&lt; "GRADE : " &lt;&lt; player.grade &lt;&lt; "\n";
+	}
+}</span>
+
+<span style = "background-color:#dfd">void AttendanceChecker::PrintRemovedPlayers() {
+	std::cout &lt;&lt; "\n";
+	std::cout &lt;&lt; "Removed player\n";
+	std::cout &lt;&lt; "==============\n";</span>
+
+<span style = "background-color:#dfd">	for (auto removed_player : removed_players) {
+		std::cout &lt;&lt; removed_player.name &lt;&lt; "\n";
+	}
+}</span></pre>
+        <hr />
+        <table width="100%">
+            <thead>
+                <tr>
+                    <th align="center">
+                        <small>Generated by</small>
+                        <a href="https://github.com/OpenCppCoverage/OpenCppCoverage/releases">
+                            <strong>OpenCppCoverage (Version: 0.9.9.0)</strong>
+                        </a>
+                    </th>
+                </tr>
+            </thead>
+        </table>
+    </body>
+</html>
