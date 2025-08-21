@@ -8,11 +8,6 @@
 
 using namespace std;
 
-struct Node {
-	string w;
-	string wk;
-};
-
 struct Attendance {
 	string name, day;
 };
