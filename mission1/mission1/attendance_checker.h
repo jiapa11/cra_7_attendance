@@ -23,10 +23,6 @@ struct Player {
 	int point;
 	int grade;
 	string name;
-	//int dat[100][100];
-	//int points[100];
-	//int grade[100];
-	//string names[100];
 };
 
 class AttendanceChecker {
@@ -69,13 +65,7 @@ public:
 		return v;
 	}
 
-	int AssignAndGetID(string name) {
-		if (name_to_id_map.count(name) == 0) {
-			name_to_id_map.insert({ name, ++id_cnt });
-			names[id_cnt] = name;
-		}
-		return name_to_id_map[name];
-	}
+
 
 	int GetDayIndex(string day) {
 		if (day == "monday") return MONDAY;
@@ -89,7 +79,7 @@ public:
 		return INVALID_INPUT;
 	}
 
-	int GetAddPoint(string day, int id) {
+	int GetAddPoint(string day) {
 		if (day == "monday") return 1;
 		if (day == "tuesday") return 1;
 		if (day == "wednesday") return 3;
@@ -101,9 +91,34 @@ public:
 		return 0;
 	}
 
+	int AssignAndGetID(string name) {
+		if (name_to_id_map.count(name) == 0) {
+			name_to_id_map.insert({ name, ++id_cnt });
+			names[id_cnt] = name;
+		}
+		return name_to_id_map[name];
+	}
+
+	bool IsNewPlayer(string name) {
+		if (name_to_id_map.count(name) == 0) return true;
+		return false;
+	}
+
 	void ParseLine(Attendance record) {
 		string name = record.name;
 		string day = record.day;
+
+		Player player{};
+
+		//if (IsNewPlayer(name)) {
+		//	Player new_player{};
+		//	new_player.name = name;
+		//	players.push_back(new_player);
+		//	player = players[id_cnt];
+		//}
+		//else {
+		//	name_to_id_map[name];
+		//}
 
 		int id = AssignAndGetID(name);
 		int day_index = GetDayIndex(day);
@@ -113,7 +128,13 @@ public:
 		}
 
 		dat[id][day_index] += 1; //사용자ID별 요일 데이터에 1씩 증가
-		points[id] += GetAddPoint(day, id);
+		points[id] += GetAddPoint(day);
+
+		Player new_player{};
+		new_player.name = name;
+		new_player.day[day_index] += 1;
+		new_player.point = GetAddPoint(day);
+		players.push_back(new_player);
 	}
 
 private:
@@ -126,8 +147,8 @@ private:
 	vector<Player> players;
 	vector<Player> removed_players;
 
-	//dat[사용자ID][요일]
-	int dat[100][100];
+
+	int dat[100][100]; 	//dat[사용자ID][요일]
 	int points[100];
 	int grade[100];
 	string names[100];
